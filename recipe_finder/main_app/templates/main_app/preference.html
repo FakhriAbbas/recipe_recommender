@@ -1,0 +1,181 @@
+{% extends "main_app/base.html" %}
+{% load static %}
+
+{% block page_title %}
+  Part 2: Tell us What you are Looking For!
+{% endblock %}
+
+{% block page_direction %}
+  <div class="row">
+    <span class="direction-text"> <b>First we want to know more about the recipes you would like to see. </b></span> <br>
+    <span class="direction-text">Please answer the following questions. </span>
+  </div>
+{% endblock %}
+
+{% block content %}
+
+<hr>
+
+<div class="row">
+  <div class="col-md-12" >
+    <!-- First question -->
+    <div>
+      <div class="row">
+        <span class="normal-text"> 1. I would like to see recipes from the following cuisines (select at least one cuisine): </span>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+        <label>
+          <input type="checkbox"  id="q1_o1" name="q1" value="1">
+            Asian
+          </input>
+        </label>
+        </div>
+        <div class="col-md-4">
+        <label>
+          <input type="checkbox"  id="q1_o2" name="q1" value="1">
+            African
+          </input>
+        </label>
+        </div>
+        <div class="col-md-4">
+        <label>
+          <input type="checkbox"  id="q1_o3" name="q1" value="1">
+            Caribbean
+          </input>
+        </label>
+        </div>
+        <div class="col-md-4">
+        <label>
+          <input type="checkbox"  id="q1_o4" name="q1" value="1">
+            American
+          </input>
+        </label>
+        </div>
+        <div class="col-md-4">
+        <label>
+          <input type="checkbox"  id="q1_o5" name="q1" value="1">
+            Caucasian
+          </input>
+        </label>
+        </div>
+        <div class="col-md-4">
+        <label>
+          <input type="checkbox"  id="q1_o6" name="q1" value="1">
+            Latin American
+          </input>
+        </label>
+        </div>
+        <div class="col-md-4">
+        <label>
+          <input type="checkbox"  id="q1_o7" name="q1" value="1">
+            European
+          </input>
+        </label>
+        </div>
+        <div class="col-md-4">
+        <label>
+          <input type="checkbox"  id="q1_o8" name="q1" value="1">
+            Mediterranean
+          </input>
+        </label>
+        </div>
+        <div class="col-md-4">
+        <label>
+          <input type="checkbox"  id="q1_o9" name="q1" value="1">
+            Middle Eastern
+          </input>
+        </label>
+        </div>
+      </div>
+    </div>
+    <!-- Second question -->
+    <div>
+      <div class="row top-buffer">
+        <span class="normal-text"> 2. I want to exclude some ingredients (you can add as many as you want or leave it empty): </span>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+            <input type="text" class="form-control" placeholder="Type here to search" aria-label="Other" aria-describedby="btnGroupAddon2">
+        </div>
+      </div>
+
+    </div>
+    <!-- Third question -->
+    <div>
+      <div class="row top-buffer">
+        <span class="normal-text"> 3. I would like to see recipes from the following course (select as many as you want or leave it empty): </span>
+      </div>
+      <div class="row">
+       <div class="col-md-4">
+        <label>
+          <input type="checkbox"  id="q3_o1" name="q1" value="1">
+            Appetizers
+          </input>
+        </label>
+        </div>
+       <div class="col-md-4">
+        <label>
+          <input type="checkbox"  id="q3_o2" name="q1" value="1">
+            Breakfast and Brunch
+          </input>
+        </label>
+        </div>
+       <div class="col-md-4">
+        <label>
+          <input type="checkbox"  id="q3_o3" name="q1" value="1">
+            Main Dishes
+          </input>
+        </label>
+        </div>
+       <div class="col-md-4">
+        <label>
+          <input type="checkbox"  id="q3_o4" name="q1" value="1">
+            Soups
+          </input>
+        </label>
+        </div>
+       <div class="col-md-4">
+        <label>
+          <input type="checkbox"  id="q3_o5" name="q1" value="1">
+            Beverages
+          </input>
+        </label>
+        </div>
+       <div class="col-md-4">
+        <label>
+          <input type="checkbox"  id="q3_o6" name="q1" value="1">
+            Desserts
+          </input>
+        </label>
+        </div>
+       <div class="col-md-4">
+        <label>
+          <input type="checkbox"  id="q3_o7" name="q1" value="1">
+            Salads
+          </input>
+        </label>
+        </div>
+       <div class="col-md-4">
+        <label>
+          <input type="checkbox"  id="q3_o8" name="q1" value="1">
+            Lunch
+          </input>
+        </label>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+
+</div>
+
+<hr>
+
+<div class="col-md-6 col-md-offset-3">
+  <button class="btn btn-primary" style="width: 100%" onclick="location.href='{% url 'session_1' %}'">Start Session 1 of 3</button>
+</div>
+
+{% endblock %}

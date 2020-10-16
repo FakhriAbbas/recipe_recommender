@@ -1,0 +1,46 @@
+{% load static %}
+    <div id="modal_wrapper">
+            <!-- The modal -->
+            <div class="modal fade" id="book_details_modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title" id="modalLabel">Book Details</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div>
+                                <div class="row">
+                                    <div class="col-xs-4">
+
+                                    {% if image_url == 'default' %}
+                                        <img class="card-img-top img-responsive" src="{% static 'images/book_PNG2120.png' %}">
+                                    {% endif %}
+
+                                    {% if image_url != 'default' %}
+                                        <img  style="height:220px"  class="card-img-top img-responsive" src="{{ image_url }}"  style="height: 100%">
+                                    {% endif %}
+
+                                    </div>
+                                    <div class="col-xs-8">
+                                        <div>
+                                            <b>Title:</b> {{ title }}
+                                        </div>
+                                        <div  style="overflow-y:scroll;height:260px">
+                                            <b>Description:</b> {{ desc }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
