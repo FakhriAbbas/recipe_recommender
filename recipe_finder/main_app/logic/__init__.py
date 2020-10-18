@@ -54,7 +54,7 @@ def save_preference_process(request):
 
         # prepare success response
         response['status'] = 1
-        response['redirect-url'] = reverse('part_2_instructions')
+        response['redirect-url'] = reverse('session_1')
         return response
     except Exception as e:
         # prepare failure response
