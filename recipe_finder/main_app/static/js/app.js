@@ -12,17 +12,14 @@ $( document ).ready(function() {
     });
     var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
 
-    $('#btn-user-next').click(function(event) {
-        data_dict = {
-            'username' : $('#userID').val()
-        }
-
-
-        $.get('submit_user_form/',data_dict, function(data){
-            window.location.href = data['redirect-url']
-        });
-
-     });
-
-
 });
+
+var VALIDATION = 1;
+
+function read_checkbox_values(element_id){
+    var values = [];
+    $('#' + element_id +' :checked').each(function() {
+        values.push($(this).val());
+    });
+    return values
+}

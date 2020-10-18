@@ -13,6 +13,9 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/custom_css.css' %}">
     <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <script src="{% static 'js/app.js' %}"></script>
+
+    {% block javascript_block %}{% endblock %}
 
   </head>
   <body>

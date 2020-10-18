@@ -1,6 +1,11 @@
 {% extends "main_app/base.html" %}
 {% load static %}
 
+{% block javascript_block %}
+  <script src="{% static 'js/pre-survey.js' %}"></script>
+{% endblock %}
+
+
 {% block page_title %}
   Part 1: Pre Survey
 {% endblock %}
@@ -26,21 +31,21 @@
       <div class="row">
         <div class="col-md-4">
         <label>
-          <input type="radio"  id="q1_o1" name="q1" value="1">
+          <input type="radio" id="q1_o1" name="q1" value="1">
             Rarely
           </input>
         </label>
         </div>
         <div class="col-md-4">
         <label>
-          <input type="radio"  id="q1_o2" name="q1" value="1">
+          <input type="radio"  id="q1_o2" name="q1" value="2">
             Sometimes
           </input>
         </label>
         </div>
         <div class="col-md-4">
         <label>
-          <input type="radio"  id="q1_o3" name="q1" value="1">
+          <input type="radio"  id="q1_o3" name="q1" value="3">
             Often
           </input>
         </label>
@@ -48,21 +53,21 @@
       </div>
     </div>
     <!-- Second question -->
-    <div>
+    <div id="q2">
       <div class="row top-buffer">
         <span class="normal-text"> 2. When you prepare for a dish you know, how do you look for recipes? </span>
       </div>
       <div class="row">
         <div class="col-md-6">
         <label>
-          <input type="checkbox" id="q2_o1" name="q1" value="1">
+          <input type="checkbox" id="q2_o1" name="q2" value="1">
             Online
           </input>
         </label>
         </div>
         <div class="col-md-6">
         <label>
-          <input type="checkbox" id="q2_o2" name="q1" value="1">
+          <input type="checkbox" id="q2_o2" name="q2" value="2">
             Asking relatives or friends
           </input>
         </label>
@@ -73,13 +78,13 @@
           <div class="input-group">
             <div class="input-group-prepend">
               <label>
-              <input type="checkbox" id="q2_o3" name="q1" value="1">Other</input>
+              <input type="checkbox" id="q2_o3" name="q2" value="3">Other</input>
               </label>
             </div>
         </div>
         </div>
         <div class="col-md-6">
-            <input type="text" class="form-control" placeholder="Type here if you selected other" aria-label="Other" aria-describedby="btnGroupAddon2">
+            <input id="q2-text" type="text" class="form-control" disabled placeholder="Type here if you selected other" aria-label="Other" aria-describedby="btnGroupAddon2">
         </div>
 
       </div>
@@ -93,21 +98,21 @@
       <div class="row">
         <div class="col-md-4">
         <label>
-          <input type="radio"  id="q3_o1" name="q1" value="1">
+          <input type="radio"  id="q3_o1" name="q3" value="1">
             Rarely
           </input>
         </label>
         </div>
         <div class="col-md-4">
         <label>
-          <input type="radio"  id="q3_o2" name="q1" value="1">
+          <input type="radio"  id="q3_o2" name="q3" value="2">
             Sometimes
           </input>
         </label>
         </div>
         <div class="col-md-4">
         <label>
-          <input type="radio"  id="q3_o3" name="q1" value="1">
+          <input type="radio"  id="q3_o3" name="q3" value="3">
             Often
           </input>
         </label>
@@ -115,21 +120,21 @@
       </div>
     </div>
     <!-- Fourth question -->
-    <div>
+    <div id="q4">
       <div class="row top-buffer">
         <span class="normal-text"> 4. How do you look for new recipes? </span>
       </div>
       <div class="row">
         <div class="col-md-6">
         <label>
-          <input type="checkbox" id="q4_o1" name="q1" value="1">
+          <input type="checkbox" id="q4_o1" name="q4" value="1">
             Online
           </input>
         </label>
         </div>
         <div class="col-md-6">
         <label>
-          <input type="checkbox" id="q4_o2" name="q1" value="1">
+          <input type="checkbox" id="q4_o2" name="q4" value="2">
             Asking relatives or friends
           </input>
         </label>
@@ -140,13 +145,13 @@
           <div class="input-group">
             <div class="input-group-prepend">
               <label>
-              <input type="checkbox" id="q4_o3" name="q1" value="1">Other</input>
+              <input type="checkbox" id="q4_o3" name="q4" value="3">Other</input>
               </label>
             </div>
         </div>
         </div>
         <div class="col-md-6">
-            <input type="text" class="form-control" placeholder="Type here if you selected other" aria-label="Other" aria-describedby="btnGroupAddon2">
+            <input id="q4-text" disabled type="text" class="form-control" placeholder="Type here if you selected other" aria-label="Other" aria-describedby="btnGroupAddon2">
         </div>
       </div>
 
@@ -162,7 +167,7 @@
       </div>
       <div class="row">
         <label>Provide your answer in the text area below</label>
-        <textarea class="form-control" rows="7"></textarea>
+        <textarea id="q5-text" disabled class="form-control" rows="7"></textarea>
       </div>
     </div>
     <div>
@@ -173,7 +178,7 @@
       </div>
       <div class="row">
         <label>Provide your answer in the text area below</label>
-        <textarea class="form-control" rows="7"></textarea>
+        <textarea id="q6-text" disabled class="form-control" rows="7"></textarea>
       </div>
       </div>
     </div>
@@ -186,7 +191,7 @@
 <hr>
 
 <div class="col-md-6 col-md-offset-3">
-  <button class="btn btn-primary" style="width: 100%" onclick="location.href='{% url 'part_2_instructions' %}'">Proceed to Part 2</button>
+  <button id="pre-survey-btn" class="btn btn-primary" style="width: 100%" >Proceed to Part 2</button>
 </div>
-
+<!-- onclick="location.href='{% url 'part_2_instructions' %}'" -->
 {% endblock %}
