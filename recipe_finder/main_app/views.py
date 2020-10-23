@@ -36,14 +36,13 @@ def session_1(request):
     if request.is_ajax():
         pass
     else:
-        result = init_critique_recommender(request)
-        critique = generate_critique_static()
-        context['items'] = result
-        context['critique'] = critique
-
+        result_json, result_df, search_space_df = init_critique_recommender(request)
+        result_json = generate_critique_static(result_df, search_space_df)
+        context['items'] = result_json
+        # context['critique'] = critique
         # results should be saved not only in the session
-        request.session['items'] = result
-        request.session['critique'] = critique
+        request.session['items'] = result_json
+        # request.session['critique'] = critique
 
     return render(request, 'main_app/critique_recommender_parent.html', context = context)
 
@@ -64,8 +63,7 @@ def submit_shopping(request):
         response = {}
         template = get_template("main_app/includes/recipe_list_critique.html")
         response['list-content'] = template.render({
-                                                    'items': request.session.get('items') ,
-                                                    'critique' : request.session.get('critique')
+                                                    'items': request.session.get('items')
                                                     },
                                                     request)
         template = get_template("main_app/includes/critique_direction.html")

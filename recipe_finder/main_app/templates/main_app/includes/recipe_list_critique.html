@@ -30,7 +30,7 @@
             <b>Show similar to this but:</b>
         </div>
         <div class="row">
-            {% for c in critique %}
+            {% for c in item.critique %}
                 <div class="col-md-4">
                     <label>
                       <input type="radio" name="critique" direction="{{c.direction}}" column="{{c.column_name}}" group="{{item.id}}">
