@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .services import *
+from django.template.loader import get_template
 from .logic import *
 import json
 
@@ -32,7 +32,48 @@ def preference(request):
         return render(request, 'main_app/preference.html', context = context)
 
 def session_1(request):
-    return render(request, 'main_app/critique_recommender.html')
+    context = {}
+    if request.is_ajax():
+        pass
+    else:
+        result = init_critique_recommender(request)
+        critique = generate_critique_static()
+        context['items'] = result
+        context['critique'] = critique
+
+        # results should be saved not only in the session
+        request.session['items'] = result
+        request.session['critique'] = critique
+
+    return render(request, 'main_app/critique_recommender_parent.html', context = context)
+
+def submit_like_dislike(request):
+    if request.is_ajax():
+        response = {}
+        template = get_template("main_app/includes/recipe_list_shopping.html")
+        response['list-content'] = template.render({'items': request.session.get('items')}, request)
+        template = get_template("main_app/includes/shopping_cart_direction.html")
+        response['direction-content'] = template.render({},request)
+        template = get_template("main_app/includes/button_shopping.html")
+        response['button-content'] = template.render({},request)
+        response['status'] = 1
+        return HttpResponse(json.dumps(response), content_type="application/json")
+
+def submit_shopping(request):
+    if request.is_ajax():
+        response = {}
+        template = get_template("main_app/includes/recipe_list_critique.html")
+        response['list-content'] = template.render({
+                                                    'items': request.session.get('items') ,
+                                                    'critique' : request.session.get('critique')
+                                                    },
+                                                    request)
+        template = get_template("main_app/includes/critique_direction.html")
+        response['direction-content'] = template.render({},request)
+        # template = get_template("main_app/includes/button_shopping.html")
+        # response['button-content'] = template.render({},request)
+        response['status'] = 1
+        return HttpResponse(json.dumps(response), content_type="application/json")
 
 def session_1_reflection(request):
     return render(request, 'main_app/critique_reflection.html')

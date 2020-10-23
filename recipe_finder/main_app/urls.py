@@ -14,5 +14,6 @@ urlpatterns = [
     path('session_3', views.session_3, name='session_3'),
     path('session_3_reflection', views.session_3_reflection, name='session_3_reflection'),
     path('thank_you', views.thank_you, name='thank_you'),
-
+    path('submit_like_dislike', views.submit_like_dislike, name='submit_like_dislike'),
+    path('submit_shopping', views.submit_shopping, name='submit_shopping'),
 ]

@@ -23,3 +23,4 @@ function read_checkbox_values(element_id){
     });
     return values
 }
+

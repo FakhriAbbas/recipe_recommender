@@ -1,0 +1,35 @@
+{% extends "main_app/base.html" %}
+{% load static %}
+
+{% block javascript_block %}
+  <script src="{% static 'js/critique_recommender.js' %}"></script>
+{% endblock %}
+
+{% block page_title %}
+  Part 2: Session 1 of 3
+{% endblock %}
+
+{% block page_direction %}
+  <div id="direction_section">
+      {% include 'main_app/includes/like_dislike_direction.html' %}
+  </div>
+{% endblock %}
+
+{% block content %}
+<hr>
+    <div id="recipe_list">
+        {% include 'main_app/includes/recipe_list_like_dislike.html' %}
+    </div>
+{% endblock %}
+
+{% block button_block %}
+    <div id="button_section">
+        {% include 'main_app/includes/like_dislike_button.html' %}
+    </div>
+{% endblock %}
+
+{% block footer %}
+    <div class="row top-buffer">
+    </div>
+{% endblock %}
+

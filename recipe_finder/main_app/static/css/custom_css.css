@@ -26,3 +26,7 @@ hr{
 
 .top-buffer { margin-top:60px; }
 .small-top-buffer { margin-top:10px; }
+
+.like_color_select{color: green}
+.de_select{color: black}
+.dis_like_color_select{color: red}
