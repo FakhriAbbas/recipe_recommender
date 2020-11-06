@@ -11,20 +11,71 @@
 
 {% block page_direction %}
   <div id="direction_section">
-      {% include 'main_app/includes/like_dislike_direction.html' %}
+      {% include 'main_app/includes/dislike_add_meal_header.html' %}
   </div>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <hr>
+    <div class="row">
+        <div class="col-md-1">
+            <b>Search history:</b>
+        </div>
+        <div class="col-md-1">
+            <div class="row">
+                <img class="img-header" src='{% static "images/logo.png" %}' alt="My image">
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    Result 1
+                </div>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <div class="row">
+                <img class="img-header" src='{% static "images/logo.png" %}' alt="My image">
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    Result 2
+                </div>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <div class="row">
+                <img class="img-header" src='{% static "images/logo.png" %}' alt="My image">
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    Result 3
+                </div>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <div class="row">
+                <img class="img-header" src='{% static "images/logo.png" %}' alt="My image">
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    Result 4
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 {% endblock %}
 
 {% block content %}
 <hr>
     <div id="recipe_list">
-        {% include 'main_app/includes/recipe_list_like_dislike.html' %}
+        {% include 'main_app/includes/recipe_list_dislike_add_meal.html' %}
     </div>
 {% endblock %}
 
 {% block button_block %}
     <div id="button_section">
-        {% include 'main_app/includes/like_dislike_button.html' %}
+        {% include 'main_app/includes/dislike_add_meal_button.html' %}
     </div>
 {% endblock %}
 

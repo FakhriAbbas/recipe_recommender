@@ -14,4 +14,21 @@ def get_cuisine_df(cuisine):
     load_cuisine_data_to_dict(cuisine)
     return cuisine_dict[cuisine]
 
-
+display_name_dict ={
+    'piquant_n' : 'Spicy',
+    'sour_n' : 'Sour',
+    'salty_n' : 'Salty',
+    'sweet_n' : 'Sweet',
+    'bitter_n' : 'Bitter',
+    'meaty_n' : 'Meaty',
+    'saturatedFatContent_n' : 'Saturated fat',
+    'fatContent_n' : 'Fat',
+    'carbohydrateContent_n' : 'Carbohydrate',
+    'sugarContent_n' : 'Sugar',
+    'calories_n' : 'Calories',
+    'fiberContent_n' : 'Fiber',
+    'cholesterolContent_n' : 'Cholesterol',
+    'transFatContent_n' : 'Trans fat',
+    'sodiumContent_n' : 'Sodium',
+    'proteinContent_n' : 'Protein'
+}

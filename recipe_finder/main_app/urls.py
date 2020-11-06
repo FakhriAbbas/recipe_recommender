@@ -16,4 +16,9 @@ urlpatterns = [
     path('thank_you', views.thank_you, name='thank_you'),
     path('submit_like_dislike', views.submit_like_dislike, name='submit_like_dislike'),
     path('submit_shopping', views.submit_shopping, name='submit_shopping'),
+    path('submit_dislike_add_to_plan', views.submit_dislike_add_to_plan, name='submit_dislike_add_to_plan'),
+    path('load_critique', views.load_critique, name='load_critique'),
+    path('submit_load_more', views.submit_load_more, name='submit_load_more'),
+    path('submit_dislike', views.submit_dislike, name='submit_dislike'),
+    path('submit_add_to_meal', views.submit_add_to_meal, name='submit_add_to_meal'),
 ]

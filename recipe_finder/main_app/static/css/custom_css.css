@@ -30,3 +30,24 @@ hr{
 .like_color_select{color: green}
 .de_select{color: black}
 .dis_like_color_select{color: red}
+
+.pointer_cursor
+{
+    cursor: pointer;
+}
+
+.progress-bar-orange {
+      background-color: orange !important;
+}
+
+/* The heart of the matter */
+
+        .horizontal-scrollable > .row {
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .horizontal-scrollable > .row > .col-xs-4 {
+            display: inline-block;
+            float: none;
+        }
