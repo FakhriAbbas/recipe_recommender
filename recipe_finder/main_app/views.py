@@ -157,6 +157,18 @@ def submit_add_to_meal(request):
     response['meal_plan_progress'] = get_meal_plan_progress(get_user_id(request))
     return HttpResponse(json.dumps(response), content_type="application/json")
 
+def show_meal_plan(request):
+    if request.is_ajax():
+        response = {}
+        template = get_template("main_app/includes/meal_plan_modal.html")
+        items = get_meal_plan_recipes(request)
+        response['model_template'] = template.render({
+                                                    'items': items
+                                                    },
+                                                    request)
+        response['status'] = 1
+        return HttpResponse(json.dumps(response), content_type="application/json")
+
 def session_1_reflection(request):
     return render(request, 'main_app/critique_reflection.html')
 

@@ -133,7 +133,7 @@ def get_exploration_progress_service(counter):
     return 100*((counter-1)/6)
 
 def get_meal_plan_progress_service(counter):
-    return 100*((counter-1)/7)
+    return 100*((counter-1)/6)
 
 def check_if_file_exists(user_id, page_name):
     return default_storage.exists('./data/results/' + str(user_id) + '/' + page_name)

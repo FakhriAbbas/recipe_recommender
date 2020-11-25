@@ -21,4 +21,6 @@ urlpatterns = [
     path('submit_load_more', views.submit_load_more, name='submit_load_more'),
     path('submit_dislike', views.submit_dislike, name='submit_dislike'),
     path('submit_add_to_meal', views.submit_add_to_meal, name='submit_add_to_meal'),
+    path('show_meal_plan', views.show_meal_plan, name='show_meal_plan'),
+
 ]

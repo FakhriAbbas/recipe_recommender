@@ -4,12 +4,38 @@
     </div>
     <div class="row">
         {% for c in critiques %}
+            <div class="col-md-3">
+                <label>{{ c.display_name }}</label>
+            </div>
             <div class="col-md-4">
-                <label>
-                  <input type="radio" name="critique" direction="{{c.direction}}" column="{{c.column_name}}" group="{{recipe_id}}">
-                    {{c.direction }} {{ c.display_name }}
-                  </input>
-                </label>
+                {% if c.More == 0.0 %}
+                    <label>
+                        <input type="radio" name="critique" column="{{c.column_name}}" group="{{recipe_id}}" disabled>
+                            More <i class="fa fa-arrow-up up_arrow" aria-hidden="true"></i>
+                        </input>
+                    </label>
+                {% else %}
+                    <label>
+                        <input type="radio" name="critique" direction="More" column="{{c.column_name}}" group="{{recipe_id}}">
+                            More <i class="fa fa-arrow-up up_arrow" aria-hidden="true"></i>
+                        </input>
+                    </label>
+                {% endif %}
+            </div>
+            <div class="col-md-4">
+                {% if c.Less == 0.0 %}
+                    <label>
+                        <input type="radio" name="critique" column="{{c.column_name}}" group="{{recipe_id}}" disabled>
+                            Less <i class="fa fa-arrow-down down_arrow" aria-hidden="true"></i>
+                        </input>
+                    </label>
+                {% else %}
+                    <label>
+                        <input type="radio" name="critique" direction="Less" column="{{c.column_name}}" group="{{recipe_id}}">
+                            Less <i class="fa fa-arrow-down down_arrow" aria-hidden="true"></i>
+                        </input>
+                    </label>
+                {% endif %}
             </div>
         {% endfor %}
     </div>

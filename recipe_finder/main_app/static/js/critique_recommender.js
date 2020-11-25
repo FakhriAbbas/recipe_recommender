@@ -37,9 +37,9 @@ $( document ).ready(function() {
         var recipe_name = ele.attr('name');
         var new_value = -1;
         if( ele.hasClass('de_select') ){
-            new_value = 1;  // add to dislike list
+            new_value = 1;  // add
         }else{
-            new_value = 0;  // remove from dislike list
+            new_value = 0;  // remove
         }
         $.ajax({
            type: 'POST',
@@ -55,7 +55,6 @@ $( document ).ready(function() {
                    }else{
                        ele.notify("Recipe removed from meal plan list", "error");
                    }
-
                    $('#meal_plan_progress').css({ width: data['meal_plan_progress'] + '%' });
                }
            }
@@ -70,7 +69,14 @@ $( document ).ready(function() {
         }else{
             handle_add_to_meal_button_clicked( $('#' + ele.id) )
         }
+
         // update CSS should not be here
+        update_css_for_add_to_meal_plan(ele)
+
+    }
+
+    function update_css_for_add_to_meal_plan(ele){
+        var is_like = $('#' + ele.id).attr('like');
         if( $('#' + ele.id).hasClass('de_select') ){
             $('#' + ele.id).removeClass('de_select');
             if(is_like == 0){
@@ -83,7 +89,6 @@ $( document ).ready(function() {
             $('#' + ele.id).removeClass('dis_like_color_select');
             $('#' + ele.id).addClass('de_select');
         }
-
     }
 
     function handle_like_dislike_click(ele){
@@ -133,6 +138,7 @@ $( document ).ready(function() {
         $('#btn-load-' + group_val).prop('disabled', false);
     }
 
+    // response to exlore more button
     function handle_load_more(ele, recipe_name){
         direction = $('input:checked').attr('direction');
         critique_name = $('input:checked').attr('column');
@@ -161,6 +167,9 @@ $( document ).ready(function() {
                         console.log(data['direction-content'])
                         $(this).html(data['direction-content']);
                         $('#direction_section').fadeIn(1000);
+                        $('#show_meal_plan').bind('click', function(){
+                            handle_show_meal_plan(this);
+                        });
                     });
 
                     $('#button_section').fadeOut(500, function(){
@@ -205,6 +214,48 @@ $( document ).ready(function() {
         });
     }
 
+    function handle_show_meal_plan(ele){
+        $.ajax({
+                type: 'POST',
+                url: 'show_meal_plan',
+                data: {
+                },
+                success: function(data){
+                    $("#modal_holder" ).html(data['model_template']);
+                    $("#meal_plan_modal" ).modal('toggle');
+
+                    $('a[id^="model_delete_"]').click(function (){
+                        handle_remove_recipe_from_model(this);
+                    });
+                }
+            });
+    }
+
+    function handle_remove_recipe_from_model(ele){
+        recipe_id =  $('#' + ele.id).attr('item_id')
+        $.ajax({
+           type: 'POST',
+           url: 'submit_add_to_meal',
+           data: {
+                'value' : 0,
+                'recipe_name' : recipe_id
+           },
+           success: function (data){
+               if(data['status'] == 1){
+                   $('#model-recipe-' + recipe_id).fadeOut(1000, function(){
+                    });
+
+                    $('#add-to-plan-' + recipe_id).removeClass('like_color_select');
+                    $('#add-to-plan-' + recipe_id).removeClass('dis_like_color_select');
+                    $('#add-to-plan-' + recipe_id).addClass('de_select');
+
+                    $('#meal_plan_progress').css({ width: data['meal_plan_progress'] + '%' });
+               }
+           }
+        });
+
+    }
+
     $('#like_done_button').click(function (){
         $('.feedback-section').each(function(index){
             // $(this).html( ("<i class=\"fas fa-shopping-cart fa-2x\"></i>") );
@@ -244,6 +295,7 @@ $( document ).ready(function() {
         });
     });
 
+    // for button: 'Proceed, I am done reviewing recipes
     $('#dislike_add_meal_done_button').click(function (){
         $('.feedback-section').each(function(index){
             // $(this).html( ("<i class=\"fas fa-shopping-cart fa-2x\"></i>") );
@@ -269,6 +321,9 @@ $( document ).ready(function() {
                 $('#direction_section').fadeOut(500, function(){
                     $(this).html(data['direction-content']);
                     $('#direction_section').fadeIn(1000);
+                    $('#show_meal_plan').bind('click', function(){
+                        handle_show_meal_plan(this);
+                    });
                 });
 
                 $('#button_section').fadeOut(500, function(){
@@ -278,9 +333,16 @@ $( document ).ready(function() {
                         handle_filling_shopping_done(this);
                     });
                 });
+
+
             }
          }
         });
     });
+
+    $('#show_meal_plan').click(function (){
+        handle_show_meal_plan(this)
+    });
+
 
 });

@@ -31,6 +31,9 @@ hr{
 .de_select{color: black}
 .dis_like_color_select{color: red}
 
+.up_arrow {color : green}
+.down_arrow {color : red}
+
 .pointer_cursor
 {
     cursor: pointer;

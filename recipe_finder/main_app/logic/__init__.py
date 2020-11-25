@@ -111,24 +111,36 @@ def generate_critique_static(result_df, search_space_df):
             if not math.isnan(row[col]):
                 has_more = (search_space_df[col].values > row[col]).any()
                 has_less = (search_space_df[col].values < row[col]).any()
+                if (has_less == 0) and (has_more == 0):
+                    continue
+
+                new_row = {'column_name': col, 'display_name': get_display_name(col), 'More' : has_more , 'Less' : has_less }
+                df_critique = df_critique.append(new_row, ignore_index=True)
+
                 if has_more:
                     new_row = {'column_name': col, 'display_name': get_display_name(col), 'direction': 'More'}
-                    df_critique = df_critique.append(new_row, ignore_index=True)
+                    # df_critique = df_critique.append(new_row, ignore_index=True)
                 if has_less:
                     new_row = {'column_name': col, 'display_name': get_display_name(col), 'direction': 'Less'}
-                    df_critique = df_critique.append(new_row, ignore_index=True)
+                    # df_critique = df_critique.append(new_row, ignore_index=True)
 
         for col in nutrition_col:
             s = search_space_df[col].values
             if row[col]:
                 has_more = ( s > row[col] ).any()
                 has_less = ( s < row[col] ).any()
+                if (has_less == 0) and (has_more == 0):
+                    continue
+
+                new_row = {'column_name': col, 'display_name': get_display_name(col), 'More' : has_more , 'Less' : has_less }
+                df_critique = df_critique.append(new_row, ignore_index=True)
+
                 if has_more:
                     new_row = {'column_name': col, 'display_name': get_display_name(col), 'direction': 'More'}
-                    df_critique = df_critique.append(new_row, ignore_index=True)
+                    # df_critique = df_critique.append(new_row, ignore_index=True)
                 if has_less:
                     new_row = {'column_name': col, 'display_name': get_display_name(col), 'direction': 'Less'}
-                    df_critique = df_critique.append(new_row, ignore_index=True)
+                    # df_critique = df_critique.append(new_row, ignore_index=True)
 
         result_df.at[index,'critique'] = json.loads( df_critique.to_json(orient='records') )
 
@@ -234,3 +246,10 @@ def add_recipe_add_to_meal_plan(recipe_name,user_id):
 def get_meal_plan_progress(user_id):
     recipe_list = load_meal_plan_recipe_list(user_id)
     return get_meal_plan_progress_service(len(recipe_list))
+
+def get_meal_plan_recipes(request):
+    user_id = get_user_id(request)
+    recipe_list = load_meal_plan_recipe_list(user_id)
+    search_space_df = load_search_space(user_id)
+    result_df = search_space_df.loc[search_space_df['id'].isin(recipe_list)][get_relevant_columns()]
+    return json.loads(result_df.to_json(orient='records'))
