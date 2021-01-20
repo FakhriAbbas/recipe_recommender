@@ -1,5 +1,23 @@
 $( document ).ready(function() {
 
+    var availableTutorials  = load_ingr();
+
+    function load_ingr(){
+
+    }
+
+    $( "#autocomplete" ).autocomplete({
+        source: availableTutorials,
+        focus: function( event, ui ) {
+                  $( "#autocomplete" ).val( ui.item.label );
+                     return false;
+               },
+        select: function (event, ui){
+            console.log(ui.item.label);
+            return false;
+        }
+
+    });
 
     $('#preference-btn').click(function (event) {
         var q1_values = read_checkbox_values('q1');

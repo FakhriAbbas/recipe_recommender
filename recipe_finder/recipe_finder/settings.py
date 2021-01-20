@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main_app',
-    'main_app.templatetags.math_extras'
+    'main_app.templatetags.math_extras',
+    'main_app.templatetags.common_tools'
 ]
 
 MIDDLEWARE = [

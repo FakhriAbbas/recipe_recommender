@@ -8,9 +8,12 @@ register = template.Library()
 def division_dv(value,arg):
     if value is None:
         return 0
+    elif value is '':
+        return 0
     elif arg is None:
         return 0
     arg = float(str(arg))
+    value = float(str(value))
     result = (value / arg) * 100
 
     if result >= 100:
@@ -21,9 +24,12 @@ def division_dv(value,arg):
 def division_dv(value,arg):
     if value is None:
         return 0
+    elif value is '':
+        return 0
     elif arg is None:
         return 0
     arg = float(str(arg))
+    value = float(str(value))
     result = (value / arg) * 100
 
     return int(result)

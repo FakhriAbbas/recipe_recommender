@@ -6,13 +6,17 @@
     {% csrf_token %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
-    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>
-<!--    https://bootstrapdocs.com/v3.3.5/docs/components/-->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <!-- Bootstrap JS -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<!--    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>-->
+<!--    <script src="https://code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>-->
+<!-- new -->
+     <link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+      <script src = "https://code.jquery.com/jquery-1.10.2.js"></script>
+      <script src = "https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+ <!-- -->
 
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700,700i">
 
     <link rel="stylesheet" type="text/css" href="{% static 'css/custom_css.css' %}">
@@ -21,14 +25,6 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/circle.css' %}">
     <script src="{% static 'js/notify.min.js' %}"></script>
     <script src="{% static 'js/app.js' %}"></script>
-
-
-
-    <!-- jQuery library -->
-    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
-
-
-
     {% block javascript_block %}{% endblock %}
 
   </head>
@@ -51,7 +47,7 @@
         <div class="row">
           {% block breadcrumbs %}{% endblock %}
         </div>
-        <div class="row">
+        <div class="row" style="overflow:auto;">
           {% block content %}{% endblock %}
         </div>
         <div class="row">

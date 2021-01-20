@@ -3,7 +3,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from ..data import *
 import pandas as pd
-
+import datetime
 
 def get_random_string(length):
     letters = string.ascii_lowercase
@@ -130,32 +130,91 @@ def get_relevant_columns():
                                                                                ]
 
 def get_exploration_progress_service(counter):
-    return 100*((counter-1)/6)
+    # return 100
+    return 100*((counter)/6)
 
 def get_meal_plan_progress_service(counter):
-    return 100*((counter-1)/6)
+    # return 100
+    return 100*((counter)/6)
 
 def check_if_file_exists(user_id, page_name):
     return default_storage.exists('./data/results/' + str(user_id) + '/' + page_name)
 
 def save_dislike_recipe_list(recipe_list, user_id):
     page_name = 'dislike_recipe_list'
-    if check_if_file_exists(user_id, page_name):
-        delete_file(user_id,page_name)
-    save_data_to_storage(user_id, page_name, recipe_list)
+    current_session = get_study_settings_value(user_id, 'current_session')
+    if check_if_file_exists(user_id, current_session + '/' + page_name):
+        delete_file(user_id, current_session + '/' + page_name)
+    save_data_to_storage(user_id, current_session + '/' + page_name, recipe_list)
 
 def load_dislike_recipe_list(user_id):
-    if not check_if_file_exists(user_id, 'dislike_recipe_list'):
+    page_name = 'dislike_recipe_list'
+    current_session = get_study_settings_value(user_id, 'current_session')
+    if not check_if_file_exists(user_id, current_session + '/' + page_name):
         return []
-    return json.loads(load_data_from_storage(user_id, 'dislike_recipe_list'))
+    return json.loads(load_data_from_storage(user_id, current_session + '/' + page_name))
 
 def load_meal_plan_recipe_list(user_id):
-    if not check_if_file_exists(user_id, 'meal_plan_recipe_list'):
+    page_name = 'meal_plan_recipe_list'
+    current_session = get_study_settings_value(user_id, 'current_session')
+    if not check_if_file_exists(user_id, current_session + '/' + page_name):
         return []
-    return json.loads(load_data_from_storage(user_id, 'meal_plan_recipe_list'))
+    return json.loads(load_data_from_storage(user_id, current_session + '/' + page_name))
 
 def save_meal_plan_recipe_list(recipe_list, user_id):
     page_name = 'meal_plan_recipe_list'
+    current_session = get_study_settings_value(user_id, 'current_session')
+    if check_if_file_exists(user_id, current_session + '/' + page_name):
+        delete_file(user_id, current_session + '/' + page_name)
+    save_data_to_storage(user_id, current_session + '/' + page_name, recipe_list)
+
+def load_user_exploration_history_service(session_name, user_id):
+    page_name = str(session_name) + '/' + 'exploration_history'
+    if not check_if_file_exists(user_id, page_name):
+        return {}
+    return json.loads(load_data_from_storage(user_id, page_name))
+
+def save_user_exploration_history_service(session_name, data_dictionary, user_id):
+    page_name = session_name + '/' + 'exploration_history'
     if check_if_file_exists(user_id, page_name):
         delete_file(user_id,page_name)
-    save_data_to_storage(user_id, page_name, recipe_list)
+    save_data_to_storage(user_id, page_name, data_dictionary)
+
+def extract_critique_data(request):
+    direction = request.POST.get("direction", "")
+    column_name = request.POST.get("critique_name", "")
+    recipe_name = request.POST.get("recipe_name", "")
+    recipe_id = request.POST.get("recipe_id", "")
+    return direction, column_name, recipe_name, recipe_id
+
+def log_meal_plan_transaction(recipe_name, user_id, action, session_name):
+    name = session_name + '/' + 'meal_plan_logs'
+    list_ = [recipe_name, user_id, action, datetime.datetime.now().timestamp()]
+    tmp = list([])
+    if check_if_file_exists(user_id,name):
+        tmp = json.loads(load_data_from_storage(user_id,name))
+        delete_file(user_id,name)
+    tmp.append(list_)
+    print(tmp)
+    save_data_to_storage(user_id,name,tmp)
+
+def log_dislike_transaction(recipe_name, user_id, action, session_name):
+    name = session_name + '/' + 'dislike_logs'
+    list_ = [recipe_name, user_id, action, datetime.datetime.now().timestamp()]
+    tmp = list([])
+    if check_if_file_exists(user_id,name):
+        tmp = json.loads(load_data_from_storage(user_id,name))
+        delete_file(user_id,name)
+    tmp.append(list_)
+    print(tmp)
+    save_data_to_storage(user_id,name,tmp)
+
+def log_loading_search_result(user_id, search_number, session_name):
+    name = session_name + '/' + 'search_result_logs'
+    list_ = [user_id, search_number, datetime.datetime.now().timestamp()]
+    tmp = list([])
+    if check_if_file_exists(user_id,name):
+        tmp = json.loads(load_data_from_storage(user_id,name))
+        delete_file(user_id,name)
+    tmp.append(list_)
+    save_data_to_storage(user_id,name,tmp)

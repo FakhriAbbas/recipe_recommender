@@ -1,10 +1,12 @@
 $( document ).ready(function() {
-
+    $('[data-toggle="tooltip"]').tooltip();
 
     $('i').on('click',null, null, function (){
         // handle_like_dislike_click(this);
         handle_dislike_add_to_plan_click(this);
     });
+
+    handle_explore_more();
 
     function handle_dislike_button_clicked(ele) {
         var new_value = -1;
@@ -56,6 +58,11 @@ $( document ).ready(function() {
                        ele.notify("Recipe removed from meal plan list", "error");
                    }
                    $('#meal_plan_progress').css({ width: data['meal_plan_progress'] + '%' });
+                   if( data['is_end_session'] == 1){
+                       $('#session_done_btn').attr('disabled',false);
+                   }else{
+                       $('#session_done_btn').attr('disabled',true);
+                   }
                }
            }
         });
@@ -138,10 +145,10 @@ $( document ).ready(function() {
         $('#btn-load-' + group_val).prop('disabled', false);
     }
 
-    // response to exlore more button
-    function handle_load_more(ele, recipe_name){
-        direction = $('input:checked').attr('direction');
-        critique_name = $('input:checked').attr('column');
+    // response to explore more button
+    function handle_load_more(ele, recipe_id, recipe_name){
+        direction = $(ele).attr('direction');
+        critique_name = $(ele).attr('column');
 
         $.ajax({
            type: 'POST',
@@ -149,7 +156,8 @@ $( document ).ready(function() {
            data: {
                 'direction' : direction,
                 'critique_name' : critique_name,
-                'recipe_name' : recipe_name
+                'recipe_name' : recipe_name,
+                'recipe_id' : recipe_id
            },
            success: function (data){
                if(data['status'] == 1){
@@ -164,7 +172,6 @@ $( document ).ready(function() {
                     });
 
                     $('#direction_section').fadeOut(500, function(){
-                        console.log(data['direction-content'])
                         $(this).html(data['direction-content']);
                         $('#direction_section').fadeIn(1000);
                         $('#show_meal_plan').bind('click', function(){
@@ -180,33 +187,53 @@ $( document ).ready(function() {
                         });
                     });
 
+                    $('#search_history_section').fadeOut(500, function(){
+                        $(this).html(data['search-history-content']);
+                        $('#search_history_section').fadeIn(1000);
+                        $('[data-toggle="tooltip"]').tooltip();
+                        $('div[id^="search_link-"]').bind('click', function () {
+                            var search_key = $(this).attr('search_key');
+                            console.log(search_key);
+                            handle_search_link(search_key);
+                        });
+
+                   });
+
                }
            }
         });
     }
 
-    function handle_explore_more(ele){
+    function handle_explore_more(){
         $('div[id^="expl_more_"]').on('click', function (){
             var recipe_name = $(this).attr('name')
+            var recipe_id = $(this).attr('recipe_id')
             $.ajax({
                 type: 'POST',
                 url: 'load_critique',
                 data: {
-                    'recipe_name' : recipe_name
+                    'recipe_name' : recipe_name,
+                    'recipe_id' : recipe_id
                 },
                 success: function(data){
                     if (data['status'] == 1){
-                        var ele_id = 'critique_panel_' + recipe_name;
+                        var ele_id = 'critique_panel_' + recipe_id;
                         $('#' + ele_id).fadeOut(500, function(){
                                 $(this).html(data['critique-content']);
                                 $('#' + ele_id).fadeIn(100);
-                                $('input[group=' + recipe_name + ']').bind('click', function (){
+                                $('input[group=' + recipe_id + ']').bind('click', function (){
                                     handle_critique_clicked(this);
                                 });
-                                var expl_id = 'btn-load-' + recipe_name;
-                                $('#' + expl_id).bind('click', function () {
-                                    handle_load_more(this,recipe_name);
+                                // var expl_id = 'btn-load-' + recipe_id;
+                                // $('#' + expl_id).bind('click', function () {
+                                //     handle_load_more(this,recipe_id,recipe_name);
+                                // });
+                                $('span[id^="link-load"]').on('click',function(){
+                                    recipe_id = $(this).attr('recipe_id');
+                                    recipe_name = $(this).attr('recipe_name');
+                                    handle_load_more(this, recipe_id, recipe_name);
                                 });
+
                         });
                     }
                 }
@@ -333,8 +360,6 @@ $( document ).ready(function() {
                         handle_filling_shopping_done(this);
                     });
                 });
-
-
             }
          }
         });
@@ -344,5 +369,84 @@ $( document ).ready(function() {
         handle_show_meal_plan(this)
     });
 
+    $('div[id^="search_link-"]').on('click', function (){
+       var search_key = $(this).attr('search_key');
+       handle_search_link(search_key);
+    });
+
+    function handle_search_link(search_key){
+       $.ajax({
+         type: 'POST',
+         url: 'load_search_result',
+         data: {
+             'search_key' : search_key
+         },
+         success: function(data){
+            if (data['status'] == 1){
+                $('#recipe_list').fadeOut(500, function(){
+                    $(this).html(data['list-content']);
+                    $('#recipe_list').fadeIn(1000);
+                    handle_explore_more();
+                    // binding the on click event to the cart
+                    $('i').bind('click', function (){
+                        handle_dislike_add_to_plan_click(this);
+                    });
+                });
+
+                for( var i = 0 ; i < 20; i++){
+                    $('#search_link-' + i).removeClass("bold")
+                }
+                $('#search_link-' + search_key).addClass("bold")
+            }
+         }
+        });
+    }
+
+    $('#load_more_recipe_btn').on('click', function () {
+        $.ajax({
+           type: 'POST',
+           url: 'submit_load_more_no_critique',
+           data: {
+           },
+           success: function (data){
+               if(data['status'] == 1){
+                    $('#recipe_list').fadeOut(500, function(){
+                        $(this).html(data['list-content']);
+                        $('#recipe_list').fadeIn(1000);
+                        $('i').bind('click', function (){
+                            handle_dislike_add_to_plan_click(this);
+                        });
+                    });
+
+                    $('#direction_section').fadeOut(500, function(){
+                        $(this).html(data['direction-content']);
+                        $('#direction_section').fadeIn(1000);
+                        $('#show_meal_plan').bind('click', function(){
+                            handle_show_meal_plan(this);
+                        });
+                    });
+
+                    $('#button_section').fadeOut(500, function(){
+                        $(this).html(data['button-content']);
+                        $('#button_section').fadeIn(1000);
+                        $('#shopping_done_button').bind('click', function (){
+                            handle_filling_shopping_done(this);
+                        });
+                    });
+
+                    $('#search_history_section').fadeOut(500, function(){
+                        $(this).html(data['search-history-content']);
+                        $('#search_history_section').fadeIn(1000);
+                        $('[data-toggle="tooltip"]').tooltip();
+                        $('div[id^="search_link-"]').bind('click', function () {
+                            var search_key = $(this).attr('search_key');
+                            handle_search_link(search_key);
+                        });
+                   });
+
+               }
+           }
+        });
+    });
 
 });

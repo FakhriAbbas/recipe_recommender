@@ -1,8 +1,14 @@
 {% load math_extras %}
+{% load static %}
 
 <!-- image -->
 <div class="col-md-2">
-    <img class="img-header" src={{item.smallImageUrl}} alt="My image">
+    {% if item.smallImageUrl %}
+        <img class="img-thumbnail" src={{item.smallImageUrl}} alt="My image">
+    {% else %}
+        <img class="img-thumbnail" src={% static "images/logo.png" %} alt="My image">
+    {% endif %}
+
 </div>
 
 <!-- Description -->
@@ -15,7 +21,9 @@
     <div class="row">
         <div class="col-md-12">
             <b>Ingredients:</b>
-                {{item.ingredients}}
+                {% for ingr in item.ingredients %}
+                    {{ingr}},
+                {% endfor %}
         </div>
     </div>
     <div class="row">
@@ -25,10 +33,18 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-            <a data-toggle="collapse" data-target="#flavour-collapse-{{item.id}}-{{model}}">Recipe flavour [+]</a>
+            {% if item.piquant_n %}
+                <a data-toggle="collapse" data-target="#flavour-collapse-{{item.id}}-{{model}}">Recipe flavour [+]</a>
+            {% else %}
+                <a class="disabled">Recipe flavour (Not Available)</a>
+            {% endif %}
         </div>
         <div class="col-md-6">
-            <a data-toggle="collapse" data-target="#nutrition-collapse-{{item.id}}-{{model}}">Recipe Nutrional info [+]</a>
+            {% if item.calories_n %}
+                <a data-toggle="collapse" data-target="#nutrition-collapse-{{item.id}}-{{model}}">Recipe Nutritional info [+]</a>
+            {% else %}
+                <a class="disabled">Recipe Nutritional info (Not Available)</a>
+            {% endif %}
         </div>
     </div>
 
@@ -106,7 +122,7 @@
         </div>
     </div>
 
-    <!-- nutriotion collapse panel -->
+    <!-- nutrition collapse panel -->
     <div class="row">
             <div id="nutrition-collapse-{{item.id}}-{{model}}" class="panel-collapse collapse">
                 <div class="col-md-4">
@@ -201,3 +217,4 @@
             </div>
     </div>
 </div>
+

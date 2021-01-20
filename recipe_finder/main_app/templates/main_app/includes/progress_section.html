@@ -26,5 +26,21 @@
             <b><img src="{% static 'images/diet_plan_icon.png'%}" style="width: 30px"> Meal plan</b>
         </div>
     </a>
+
+    <div class="col-md-7">
+        <div class="d-inline-block" tabindex="0" data-toggle="tooltip" title data-placement="bottom"
+             data-original-title="Both progress bars should be completed to end the session">
+        {% if is_end_session == 1 %}
+            <button id='session_done_btn' class="btn btn-primary"
+                    style="width: 100%" onclick="location.href='{% url 'end_session' %}'">
+                End Session! &#128522
+            </button>
+        {% else %}
+            <button id='session_done_btn' class="btn btn-primary" style="width: 100%" disabled='disabled' onclick="location.href='{% url 'end_session' %}'">
+                End Session! &#128522
+            </button>
+        {% endif %}
+        </div>
+    </div>
 </div>
 

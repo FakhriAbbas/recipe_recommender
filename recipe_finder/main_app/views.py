@@ -2,12 +2,24 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.template.loader import get_template
 from .logic import *
+from .constants import *
 import json
 
 def index(request):
     if 'USER_ID' not in request.session:
         request.session['USER_ID'] = get_random_string(20)
+
+    variations = [
+        [STATIC_CRI, DIV_CRI, NO_CRI],
+        [STATIC_CRI, NO_CRI, DIV_CRI],
+        [DIV_CRI, STATIC_CRI, NO_CRI],
+        [DIV_CRI, NO_CRI, STATIC_CRI],
+        [NO_CRI, STATIC_CRI, DIV_CRI],
+        [NO_CRI, DIV_CRI, STATIC_CRI]
+    ]
+
     save_study_variables(get_user_id(request))
+    add_to_study_settings( get_user_id(request), 'seq', variations[0])
     return render(request, 'main_app/index.html')
 
 def pre_survey(request):
@@ -15,7 +27,6 @@ def pre_survey(request):
         response = save_pre_survey_process(request)
         return HttpResponse(json.dumps(response), content_type="application/json")
     return render(request, 'main_app/pre_survey.html', context={})
-
 
 def part_2_instructions(request):
     return render(request, 'main_app/part_2_instructions.html')
@@ -32,104 +43,59 @@ def preference(request):
         return render(request, 'main_app/preference.html', context = context)
 
 def session_1(request):
-    context = {}
-    add_to_study_settings(get_user_id(request), 'current_session' , 'session_1')
-    if request.is_ajax():
-        pass
-    else:
-        result_json, result_df, search_space_df = init_critique_recommender(request)
-        result_json = generate_critique_static(result_df, search_space_df)
-        context['items'] = result_json
-        session_1_counter = get_study_settings_value(get_user_id(request), 'session_1_counter')
-        if session_1_counter is None:
-            add_to_study_settings(get_user_id(request), 'session_1_counter' , 1)
-        session_1_counter = get_study_settings_value(get_user_id(request), 'session_1_counter')
-        current_session = get_study_settings_value(get_user_id(request), 'current_session')
-        save_data_to_storage(get_user_id(request),
-                             current_session  + '_' + str(session_1_counter),
-                             result_json )
-        context['session_progress'] = get_exploration_progress_service(session_1_counter)
-        context['meal_plan_progress'] = get_meal_plan_progress(get_user_id(request))
-        return render(request, 'main_app/critique_recommender_parent.html', context = context)
-
-# Not used
-def submit_like_dislike(request):
-    if request.is_ajax():
-        response = {}
-        template = get_template("main_app/includes/recipe_list_shopping.html")
-        response['list-content'] = template.render({'items': request.session.get('items')}, request)
-        template = get_template("main_app/includes/shopping_cart_direction.html")
-        response['direction-content'] = template.render({},request)
-        template = get_template("main_app/includes/button_shopping.html")
-        response['button-content'] = template.render({},request)
-        response['status'] = 1
-        return HttpResponse(json.dumps(response), content_type="application/json")
-
-def submit_dislike_add_to_plan(request):
-    if request.is_ajax():
-        response = {}
-        template = get_template("main_app/includes/recipe_list_critique.html")
-        items = load_current_results(request)
-        response['list-content'] = template.render({'items': items }, request)
-        template = get_template("main_app/includes/critique_header.html")
-        context = {}
-        session_1_counter = get_study_settings_value(get_user_id(request), 'session_1_counter')
-        context['session_progress'] = get_exploration_progress_service(session_1_counter)
-        context['meal_plan_progress'] = get_meal_plan_progress(get_user_id(request))
-        response['direction-content'] = template.render(context,request)
-        template = get_template("main_app/includes/empty.html") # TODO based on progress
-        response['button-content'] = template.render({},request)
-        response['status'] = 1
-        return HttpResponse(json.dumps(response), content_type="application/json")
-
-# Not used
-def submit_shopping(request):
-    if request.is_ajax():
-        response = {}
-        template = get_template("main_app/includes/recipe_list_critique.html")
-        response['list-content'] = template.render({
-                                                    'items': request.session.get('items')
-                                                    },
-                                                    request)
-        template = get_template("main_app/includes/critique_direction.html")
-        response['direction-content'] = template.render({},request)
-        response['status'] = 1
-        return HttpResponse(json.dumps(response), content_type="application/json")
+    variations = get_study_settings_value(get_user_id(request), 'seq')
+    add_to_study_settings(get_user_id(request), 'current_type', variations[0])
+    return init_recommendation(request, current_session='session_1', current_type=variations[0])
 
 def load_critique(request):
     if request.is_ajax():
         response = {}
-        recipe_id, critique_list = get_critique_for_recipe( request )
+        recipe_id, recipe_name, critique_list = get_critique_for_recipe( request )
         template = get_template("main_app/includes/critique_list.html")
-        response['critique-content'] = template.render({"critiques" : critique_list , 'recipe_id' : recipe_id }, request)
+        response['critique-content'] = template.render({"critiques" : critique_list , 'recipe_id' : recipe_id, 'recipe_name' : recipe_name }, request)
         response['status'] = 1
         return HttpResponse(json.dumps(response), content_type="application/json")
 
 def submit_load_more(request):
     if request.is_ajax():
         response = {}
+        current_type = get_study_settings_value(get_user_id(request), 'current_type')
         json_result, result_df  = load_more_critique_recommender(request)
-        result_json = generate_critique_static(result_df, load_search_space(get_user_id(request)))
+        if current_type == STATIC_CRI:
+            result_json = generate_critique_static(result_df, load_search_space(get_user_id(request)))
+        else:
+            result_json = generate_critique_diverstiy(result_df, load_search_space(get_user_id(request)))
         template = get_template("main_app/includes/recipe_list_critique.html")
         response['list-content'] = template.render({'items': result_json }, request)
         template = get_template("main_app/includes/critique_header.html")
         context = {}
-        session_1_counter = get_study_settings_value(get_user_id(request), 'session_1_counter')
-        context['session_progress'] = get_exploration_progress_service(session_1_counter)
+        session_counter = get_study_settings_value(get_user_id(request), 'session_counter')
+        context['session_progress'] = get_exploration_progress_service(session_counter)
         context['meal_plan_progress'] = get_meal_plan_progress(get_user_id(request))
+        context['is_end_session'] = is_end_session_condition_has_met(request)
         response['direction-content'] = template.render(context,request)
         template = get_template("main_app/includes/empty.html") # TODO based on progress
         response['button-content'] = template.render({},request)
-        response['status'] = 1
 
         current_session = get_study_settings_value(get_user_id(request), 'current_session')
-        if current_session == 'session_1':
-            session_1_counter = get_study_settings_value(get_user_id(request), 'session_1_counter')
-            add_to_study_settings(get_user_id(request), 'session_1_counter' , session_1_counter + 1)
-            session_1_counter = get_study_settings_value(get_user_id(request), 'session_1_counter')
-            save_data_to_storage(get_user_id(request),
-                             current_session  + '_' + str(session_1_counter),
-                             result_json )
+
+        session_counter = get_study_settings_value(get_user_id(request), 'session_counter')
+        add_to_study_settings(get_user_id(request), 'session_counter' , session_counter + 1)
+        add_to_study_settings(get_user_id(request), 'current_counter', session_counter + 1)
+        session_counter = get_study_settings_value(get_user_id(request), 'session_counter')
+
+        direction, column_name, recipe_name, recipe_id = extract_critique_data(request)
+        save_user_exploration_history(get_user_id(request),recipe_name,column_name,direction)
+        save_data_to_storage(get_user_id(request),
+                         current_session  + '/' + str(session_counter),
+                         result_json )
+
+        template = get_template("main_app/includes/search_history.html")
+        search_items = load_search_history_summary(get_user_id(request))
+        response['search-history-content'] = template.render({'search_items' : search_items},request)
+        response['is_end_session'] = is_end_session_condition_has_met(request)
+        response['status'] = 1
+
         return HttpResponse(json.dumps(response), content_type="application/json")
 
 def submit_dislike(request):
@@ -155,6 +121,7 @@ def submit_add_to_meal(request):
         counter = add_recipe_add_to_meal_plan(recipe_name,user_id)
     response['status'] = 1
     response['meal_plan_progress'] = get_meal_plan_progress(get_user_id(request))
+    response['is_end_session'] = is_end_session_condition_has_met(request)
     return HttpResponse(json.dumps(response), content_type="application/json")
 
 def show_meal_plan(request):
@@ -169,20 +136,90 @@ def show_meal_plan(request):
         response['status'] = 1
         return HttpResponse(json.dumps(response), content_type="application/json")
 
-def session_1_reflection(request):
-    return render(request, 'main_app/critique_reflection.html')
+def load_search_result(request):
+    if request.is_ajax():
+        response = {}
+        items = load_search_history(request)
+        study_type = get_study_settings_value(get_user_id(request), 'current_type')
+        if study_type == NO_CRI:
+            template = get_template("main_app/includes/recipe_list_no_critique.html")
+        else:
+            template = get_template("main_app/includes/recipe_list_critique.html")
+        response['list-content'] = template.render({'items': items }, request)
+        response['status'] = 1
+        return HttpResponse(json.dumps(response), content_type="application/json")
+
+def end_session(request):
+    current_session = get_study_settings_value(get_user_id(request),'current_session')
+    if current_session == 'session_1':
+        context = {}
+        context['session_number'] = 1
+        return render(request, 'main_app/critique_reflection.html', context = context)
+    if current_session == 'session_2':
+        context = {}
+        context['session_number'] = 2
+        return render(request, 'main_app/critique_reflection.html', context = context)
+    if current_session == 'session_3':
+        context = {}
+        context['session_number'] = 3
+        return render(request, 'main_app/critique_reflection.html', context = context)
+
+def session_reflection(request):
+    if(request.is_ajax()):
+        response = save_reflection_process(request)
+        return HttpResponse(json.dumps(response), content_type="application/json")
 
 def session_2(request):
-    return render(request, 'main_app/critique_recommender_div.html')
-
-def session_2_reflection(request):
-    return render(request, 'main_app/critique_reflection_div.html')
+    variations = get_study_settings_value(get_user_id(request), 'seq')
+    add_to_study_settings(get_user_id(request), 'current_type', variations[1])
+    return init_recommendation(request, current_session='session_2', current_type=variations[1])
 
 def session_3(request):
-    return render(request, 'main_app/list_recommender.html')
+    variations = get_study_settings_value(get_user_id(request), 'seq')
+    add_to_study_settings(get_user_id(request), 'current_type', variations[2])
+    return init_recommendation(request, current_session='session_3', current_type=variations[2])
+
+def submit_load_more_no_critique(request):
+    if request.is_ajax():
+        response = {}
+        result_json, result_df  = load_more_no_critique_recommender(request)
+        template = get_template("main_app/includes/recipe_list_no_critique.html")
+        response['list-content'] = template.render({'items': result_json }, request)
+        template = get_template("main_app/includes/no_critique_header.html")
+        context = {}
+        session_counter = get_study_settings_value(get_user_id(request), 'session_counter')
+        context['session_progress'] = get_exploration_progress_service(session_counter)
+        context['meal_plan_progress'] = get_meal_plan_progress(get_user_id(request))
+        is_end_session = is_end_session_condition_has_met(request)
+        response['is_end_session'] = is_end_session
+        context['is_end_session'] = is_end_session
+        response['direction-content'] = template.render(context,request)
+
+        current_session = get_study_settings_value(get_user_id(request), 'current_session')
+
+        session_counter = get_study_settings_value(get_user_id(request), 'session_counter')
+        add_to_study_settings(get_user_id(request), 'session_counter' , session_counter + 1)
+        add_to_study_settings(get_user_id(request), 'current_counter', session_counter + 1)
+        session_counter = get_study_settings_value(get_user_id(request), 'session_counter')
+
+        direction, column_name, recipe_name, recipe_id = extract_critique_data(request)
+        save_user_exploration_history(get_user_id(request),recipe_name,column_name,direction)
+        save_data_to_storage(get_user_id(request),
+                         current_session  + '/' + str(session_counter),
+                         result_json )
+
+        template = get_template("main_app/includes/search_history.html")
+        search_items = load_search_history_summary(get_user_id(request))
+        response['search-history-content'] = template.render({'search_items' : search_items},request)
+        response['status'] = 1
+
+        return HttpResponse(json.dumps(response), content_type="application/json")
 
 def session_3_reflection(request):
     return render(request, 'main_app/list_recommender_reflection.html')
 
 def thank_you(request):
     return render(request, 'main_app/thank_you.html')
+
+def load_ingredients(request):
+    pass
