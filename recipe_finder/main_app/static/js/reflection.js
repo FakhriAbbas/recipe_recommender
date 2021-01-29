@@ -17,6 +17,7 @@ $( document ).ready(function() {
         if(VALIDATION){
             // TODO
         }
+        $.LoadingOverlay("show");
 
         $.ajax({
          type: 'POST',

@@ -149,6 +149,7 @@ $( document ).ready(function() {
     function handle_load_more(ele, recipe_id, recipe_name){
         direction = $(ele).attr('direction');
         critique_name = $(ele).attr('column');
+        $.LoadingOverlay("show");
 
         $.ajax({
            type: 'POST',
@@ -160,6 +161,7 @@ $( document ).ready(function() {
                 'recipe_id' : recipe_id
            },
            success: function (data){
+                $.LoadingOverlay("hide");
                if(data['status'] == 1){
                     $('#recipe_list').fadeOut(500, function(){
                         $(this).html(data['list-content']);
@@ -208,6 +210,11 @@ $( document ).ready(function() {
         $('div[id^="expl_more_"]').on('click', function (){
             var recipe_name = $(this).attr('name')
             var recipe_id = $(this).attr('recipe_id')
+
+            var outer_ele = $(this)
+            outer_ele.LoadingOverlay("show");
+
+
             $.ajax({
                 type: 'POST',
                 url: 'load_critique',
@@ -216,6 +223,7 @@ $( document ).ready(function() {
                     'recipe_id' : recipe_id
                 },
                 success: function(data){
+                    outer_ele.LoadingOverlay("hide");
                     if (data['status'] == 1){
                         var ele_id = 'critique_panel_' + recipe_id;
                         $('#' + ele_id).fadeOut(500, function(){
@@ -403,12 +411,14 @@ $( document ).ready(function() {
     }
 
     $('#load_more_recipe_btn').on('click', function () {
+        $.LoadingOverlay("show");
         $.ajax({
            type: 'POST',
            url: 'submit_load_more_no_critique',
            data: {
            },
            success: function (data){
+               $.LoadingOverlay("hide");
                if(data['status'] == 1){
                     $('#recipe_list').fadeOut(500, function(){
                         $(this).html(data['list-content']);

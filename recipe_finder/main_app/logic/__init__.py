@@ -369,7 +369,9 @@ def load_more_recipes_no_critique(search_space_df, user_id, N = 10):
 
 def load_more_recipes(cuisine_list, course_list, direction, column_name, recipe_name, recipe_id, user_id, N = 10):
     search_space_df = load_search_space(user_id)
+    dis_like_list = load_dislike_recipe_list(user_id)
     threshold = search_space_df[search_space_df['id'] == recipe_id][column_name].values[0]
+    search_space_df = search_space_df[~search_space_df['id'].isin(dis_like_list)]
     if direction == 'More':
         tmp_df = search_space_df[ search_space_df[column_name] > threshold ]
     elif direction == 'Less':

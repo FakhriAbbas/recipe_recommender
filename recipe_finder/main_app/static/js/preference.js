@@ -30,6 +30,10 @@ $( document ).ready(function() {
             // TODO
         }
 
+        // Show full page LoadingOverlay
+        $.LoadingOverlay("show");
+
+
         $.ajax({
          type: 'POST',
          url: 'preference',

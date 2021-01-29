@@ -19,7 +19,7 @@ def index(request):
     ]
 
     save_study_variables(get_user_id(request))
-    add_to_study_settings( get_user_id(request), 'seq', variations[0])
+    add_to_study_settings( get_user_id(request), 'seq', variations[1])
     return render(request, 'main_app/index.html')
 
 def pre_survey(request):
