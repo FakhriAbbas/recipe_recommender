@@ -25,6 +25,9 @@ def save_pre_survey_process(request):
         q4_text = request.POST.get("q4_text", "")
         q5 = request.POST.get("q5", "")
         q6 = request.POST.get("q6", "")
+        q7 = request.POST.get("q7", "")
+        q8 = request.POST.get("q8", "")
+        q9 = request.POST.get("q9", "")
 
         # prepare data
         data = {}
@@ -36,6 +39,9 @@ def save_pre_survey_process(request):
         data['q4_text'] = q4_text
         data['q5'] = q5
         data['q6'] = q6
+        data['q7'] = q7
+        data['q8'] = q8
+        data['q9'] = q9
 
         # save data
         save_data_to_storage(request.session.get('USER_ID'), page_name='pre_survey' , data = data)

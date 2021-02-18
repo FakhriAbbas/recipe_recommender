@@ -29,6 +29,9 @@ $( document ).ready(function() {
         var q4_text = $("#q4-text").val();
         var q5 = $('#q5-text').val();
         var q6 = $('#q6-text').val();
+        var q7 = $("input:radio[name ='q7']:checked").val();
+        var q8 = $("input:radio[name ='q8']:checked").val();
+        var q9 = $("input:radio[name ='q9']:checked").val();
 
         console.log(q2_values);
         if(VALIDATION){
@@ -45,7 +48,10 @@ $( document ).ready(function() {
              'q4[]' : q4_values,
              'q4_text' : q4_text,
              'q5' : q5,
-             'q6' : q6
+             'q6' : q6,
+             'q7' : q7,
+             'q8' : q8,
+             'q9' : q9
          },
          success: function(data){
              if (data['status'] == 1){
