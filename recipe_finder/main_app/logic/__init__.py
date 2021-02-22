@@ -158,7 +158,7 @@ def init_critique_recommender(request):
     return json_result, recommended_recipes, search_space_df
 
 def generate_recommendation(cuisine_list, course_list, user_id, N = 10):
-    subset_df = load_cuisine_df(cuisine_list)
+    subset_df = load_cuisine_df(cuisine_list,user_id)
     ingr_mlb = load_ingr_mlb()
     centroid = subset_df[ingr_mlb.classes_].mean()
     distance_ = cdist([centroid], subset_df[ingr_mlb.classes_], metric='euclidean')[0]
@@ -255,11 +255,15 @@ def generate_critique_diverstiy(result_df, search_space_df):
     subset_size = search_space_df.shape[0]
     data = search_space_df[columns]
 
-    print(type(data))
     # convert data to 0/1 based on average
     for col in columns:
         average = data[col].mean()
-        data[col] = data.apply( lambda row: get_cat(row[col],average) , axis = 1 )
+        print(col, average)
+        # data[col] = (data[col] > average).astype(int)
+        values = data[col].values
+        data.loc[ values > average , col ] = 1
+        data.loc[ values <= average, col] = 0
+        # data[col] = data.apply( lambda row: get_cat(row[col],average) , axis = 1 )
 
     for t in range(0,10):
         # create the random list
@@ -377,13 +381,13 @@ def load_more_recipes(cuisine_list, course_list, direction, column_name, recipe_
     search_space_df = load_search_space(user_id)
     dis_like_list = load_dislike_recipe_list(user_id)
     threshold = search_space_df[search_space_df['id'] == recipe_id][column_name].values[0]
-    search_space_df = search_space_df[~search_space_df['id'].isin(dis_like_list)]
+    search_space_df = search_space_df[~search_space_df['id'].isin(dis_like_list)] # takes time
     if direction == 'More':
         tmp_df = search_space_df[ search_space_df[column_name] > threshold ]
     elif direction == 'Less':
         tmp_df = search_space_df[search_space_df[column_name] < threshold]
     centroid = tmp_df[ tmp_df['id'] == recipe_id ][ingr_mlb.classes_].mean()
-    distance_ = cdist([centroid], tmp_df[ingr_mlb.classes_], metric='euclidean')[0]
+    distance_ = cdist([centroid], tmp_df[ingr_mlb.classes_], metric='euclidean')[0] # takes time
     distance_ = (distance_ - min(distance_)) / (max(distance_) - min(distance_))
     tmp_df.loc[:, 'dist_'] = distance_ / 2
     if len(course_list) != 0:
@@ -391,7 +395,9 @@ def load_more_recipes(cuisine_list, course_list, direction, column_name, recipe_
     else:
         tmp_df.loc[ : , 'course_score'] = 0.0
     tmp_df.loc[ : , 'score'] = tmp_df['dist_'] + tmp_df['course_score']
+
     top_n_recipe = tmp_df.sort_values(by='score', ascending=False)[0:N*10][get_relevant_columns()]
+
     top_n_recipe.drop_duplicates(subset=['id'], inplace=True)
     top_n_recipe = top_n_recipe[0:N]
 
@@ -514,3 +520,27 @@ def load_search_history(request):
     log_loading_search_result(user_id, search_number, current_session)
 
     return results
+
+def log_recipe_flavour_nutrition_logic(request):
+    is_expanded = request.POST.get("is_expanded", "")
+    type = request.POST.get("type", "")
+    recipe_id = request.POST.get("recipe_id", "")
+
+    user_id = get_user_id(request)
+    current_session = get_study_settings_value(user_id, 'current_session')
+    log_recipe_flavour_nutrition_service(type, recipe_id, is_expanded, user_id, current_session)
+
+def log_load_critique_logic(request, critique_list):
+    user_id = get_user_id(request)
+    recipe_id = request.POST.get('recipe_id')
+    current_session = get_study_settings_value(user_id, 'current_session')
+    log_load_critique_service(user_id, recipe_id, current_session,critique_list)
+
+def log_session_start_logic(request, current_session):
+    user_id = get_user_id(request)
+    log_session_start_service(user_id,current_session)
+
+def log_session_end_logic(request):
+    user_id = get_user_id(request)
+    current_session = get_study_settings_value(user_id, 'current_session')
+    log_session_end_service(user_id,current_session)

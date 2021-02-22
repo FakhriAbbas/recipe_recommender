@@ -163,7 +163,12 @@
 <hr>
 
 <div class="col-md-6 col-md-offset-3">
-  <button id='reflection-btn' class="btn btn-primary" style="width: 100%">Proceed to Session 2 of 3</button>
+  {% if session_number == 3 %}
+    <button id='reflection-btn' class="btn btn-primary" style="width: 100%">End Study</button>
+  {% else %}
+    <button id='reflection-btn' class="btn btn-primary" style="width: 100%">Proceed to next session</button>
+  {% endif %}
+
 <!--  onclick="location.href='{% url 'session_2' %}'"-->
 </div>
 {% endblock %}

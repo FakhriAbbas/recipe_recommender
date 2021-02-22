@@ -8,6 +8,43 @@ $( document ).ready(function() {
 
     handle_explore_more();
 
+
+   $('a[id^="nutrition-collapse-"]').on('click', function () {
+       handle_recipe_details_clicked(this, 'nutrition');
+    });
+
+   $('a[id^="flavour-collapse-"]').on('click', function () {
+       handle_recipe_details_clicked(this, 'flavour');
+    });
+
+    function handle_recipe_details_clicked( ele, type){
+
+       recipe_id = $(ele).attr('recipe-id')
+       is_expanded = $(ele).attr('aria-expanded')
+       if ( (is_expanded == null) || (is_expanded == false) )
+            is_expanded = true
+        else
+            is_expanded = false
+
+        console.log(is_expanded)
+
+        $.ajax({
+           type: 'POST',
+           url: 'log_recipe_flavour_nutrition',
+           data: {
+                'is_expanded' : is_expanded,
+                'type' : type,
+                'recipe_id' : recipe_id
+           },
+           success: function (data){
+               if(data['status'] == 1){
+
+               }
+           }
+        });
+    }
+
+
     function handle_dislike_button_clicked(ele) {
         var new_value = -1;
         var recipe_name = ele.attr('name');
@@ -171,6 +208,12 @@ $( document ).ready(function() {
                         $('i').bind('click', function (){
                             handle_dislike_add_to_plan_click(this);
                         });
+                        $('a[id^="nutrition-collapse-"]').bind('click', function () {
+                            handle_recipe_details_clicked(this,'nutrition')
+                        });
+                        $('a[id^="flavour-collapse-"]').bind('click', function () {
+                            handle_recipe_details_clicked(this,'falvour')
+                        });
                     });
 
                     $('#direction_section').fadeOut(500, function(){
@@ -195,7 +238,6 @@ $( document ).ready(function() {
                         $('[data-toggle="tooltip"]').tooltip();
                         $('div[id^="search_link-"]').bind('click', function () {
                             var search_key = $(this).attr('search_key');
-                            console.log(search_key);
                             handle_search_link(search_key);
                         });
 
@@ -399,6 +441,12 @@ $( document ).ready(function() {
                     $('i').bind('click', function (){
                         handle_dislike_add_to_plan_click(this);
                     });
+                    $('a[id^="nutrition-collapse-"]').bind('click', function () {
+                        handle_recipe_details_clicked(this,'nutrition')
+                    });
+                    $('a[id^="flavour-collapse-"]').bind('click', function () {
+                        handle_recipe_details_clicked(this,'falvour')
+                    });
                 });
 
                 for( var i = 0 ; i < 20; i++){
@@ -425,6 +473,12 @@ $( document ).ready(function() {
                         $('#recipe_list').fadeIn(1000);
                         $('i').bind('click', function (){
                             handle_dislike_add_to_plan_click(this);
+                        });
+                        $('a[id^="nutrition-collapse-"]').bind('click', function () {
+                                handle_recipe_details_clicked(this,'nutrition')
+                            });
+                        $('a[id^="flavour-collapse-"]').bind('click', function () {
+                                handle_recipe_details_clicked(this,'falvour')
                         });
                     });
 

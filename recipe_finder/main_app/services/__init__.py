@@ -30,18 +30,13 @@ def get_failure_response(exception_msg):
 def get_cuisine_list():
     cuisine_list = [
         'Asian',
-        'Barbecue',
-        'Mediterranean',
-        'North American',
-        'European',
-        'Oceanic',
-        'Middle Eastern',
         'African',
+        'Mediterranean',
+        'Middle Eastern',
+        'European',
         'North American',
-        'Caribbean',
         'South American',
         'Central American',
-        'Caucasian'
     ]
     return cuisine_list
 
@@ -78,7 +73,10 @@ def get_course_preference(user_id):
     preference_json = json.loads(default_storage.open('./data/results/' + str(user_id) + '/preference' , mode = 'r').readline())
     return preference_json['q3']
 
-def load_cuisine_df(cuisine_list):
+def load_cuisine_df(cuisine_list, user_id):
+    if check_if_file_exists(user_id,'search_space.pkl'):
+        print('loaded')
+        return load_search_space(user_id)
     subset_df = pd.DataFrame()
     for c in cuisine_list:
         tmp_df = get_cuisine_df(c)
@@ -89,10 +87,16 @@ def load_ingr_mlb():
     return ingr_mlb
 
 def save_search_space(user_id, search_space_df):
-    search_space_df.to_pickle(str(default_storage.location) + '/data/results/' + str(user_id) + '/search_space.pkl')
+    if check_if_file_exists(user_id, 'search_space.pkl'):
+        pass
+    else:
+        search_space_df.to_pickle(str(default_storage.location) + '/data/results/' + str(user_id) + '/search_space.pkl')
 
 def load_search_space(user_id):
-    return pd.read_pickle(str(default_storage.location) + '/data/results/' + str(user_id) + '/search_space.pkl')
+    search_space = get_search_space()
+    if search_space == None:
+        search_space = pd.read_pickle(str(default_storage.location) + '/data/results/' + str(user_id) + '/search_space.pkl')
+    return search_space
 
 def save_study_variables(user_id, dict_ = {}):
     save_data_to_storage(user_id, 'study_settings' ,  dict_ )
@@ -218,3 +222,38 @@ def log_loading_search_result(user_id, search_number, session_name):
         delete_file(user_id,name)
     tmp.append(list_)
     save_data_to_storage(user_id,name,tmp)
+
+def log_recipe_flavour_nutrition_service(type, recipe_id, is_expanded, user_id, session_name):
+    name = session_name + '/' + 'nutrition_flavour_logs'
+    list_ = [type, recipe_id, is_expanded, datetime.datetime.now().timestamp()]
+    tmp = list([])
+    if check_if_file_exists(user_id,name):
+        tmp = json.loads(load_data_from_storage(user_id,name))
+        delete_file(user_id,name)
+    tmp.append(list_)
+    save_data_to_storage(user_id,name,tmp)
+
+def log_load_critique_service(user_id, recipe_id, session_name, critique_list):
+    name = session_name + '/' + 'explore_more_logs'
+    list_ = [user_id, recipe_id , session_name, critique_list , datetime.datetime.now().timestamp()]
+    tmp = list([])
+    if check_if_file_exists(user_id,name):
+        tmp = json.loads(load_data_from_storage(user_id,name))
+        delete_file(user_id,name)
+    tmp.append(list_)
+    save_data_to_storage(user_id,name,tmp)
+
+def log_session_start_service(user_id, session_name):
+    name = session_name + '/' + 'start_time'
+    list_ = [datetime.datetime.now().timestamp()]
+    tmp = list([])
+    tmp.append(list_)
+    save_data_to_storage(user_id,name,tmp)
+
+def log_session_end_service(user_id, session_name):
+    name = session_name + '/' + 'end_time'
+    list_ = [datetime.datetime.now().timestamp()]
+    tmp = list([])
+    tmp.append(list_)
+    save_data_to_storage(user_id,name,tmp)
+

@@ -5,7 +5,7 @@ from .logic import *
 from .constants import *
 import json
 
-def index(request):
+def index(request,variation):
     if 'USER_ID' not in request.session:
         request.session['USER_ID'] = get_random_string(20)
 
@@ -19,7 +19,7 @@ def index(request):
     ]
 
     save_study_variables(get_user_id(request))
-    add_to_study_settings( get_user_id(request), 'seq', variations[1])
+    add_to_study_settings( get_user_id(request), 'seq', variations[variation])
     return render(request, 'main_app/index.html')
 
 def pre_survey(request):
@@ -45,7 +45,20 @@ def preference(request):
 def session_1(request):
     variations = get_study_settings_value(get_user_id(request), 'seq')
     add_to_study_settings(get_user_id(request), 'current_type', variations[0])
+    log_session_start_logic(request,'session_1')
     return init_recommendation(request, current_session='session_1', current_type=variations[0])
+
+def session_2(request):
+    variations = get_study_settings_value(get_user_id(request), 'seq')
+    add_to_study_settings(get_user_id(request), 'current_type', variations[1])
+    log_session_start_logic(request,'session_2')
+    return init_recommendation(request, current_session='session_2', current_type=variations[1])
+
+def session_3(request):
+    variations = get_study_settings_value(get_user_id(request), 'seq')
+    add_to_study_settings(get_user_id(request), 'current_type', variations[2])
+    log_session_start_logic(request,'session_3')
+    return init_recommendation(request, current_session='session_3', current_type=variations[2])
 
 def load_critique(request):
     if request.is_ajax():
@@ -54,17 +67,24 @@ def load_critique(request):
         template = get_template("main_app/includes/critique_list.html")
         response['critique-content'] = template.render({"critiques" : critique_list , 'recipe_id' : recipe_id, 'recipe_name' : recipe_name }, request)
         response['status'] = 1
+        log_load_critique_logic(request,critique_list)
         return HttpResponse(json.dumps(response), content_type="application/json")
 
 def submit_load_more(request):
     if request.is_ajax():
         response = {}
+        print('1')
         current_type = get_study_settings_value(get_user_id(request), 'current_type')
+        print('2')
         json_result, result_df  = load_more_critique_recommender(request)
+        print('3')
+        search_space = load_search_space(get_user_id(request))
+        print('4')
         if current_type == STATIC_CRI:
-            result_json = generate_critique_static(result_df, load_search_space(get_user_id(request)))
+            result_json = generate_critique_static(result_df, search_space)
         else:
-            result_json = generate_critique_diverstiy(result_df, load_search_space(get_user_id(request)))
+            result_json = generate_critique_diverstiy(result_df, search_space)
+        print('5')
         template = get_template("main_app/includes/recipe_list_critique.html")
         response['list-content'] = template.render({'items': result_json }, request)
         template = get_template("main_app/includes/critique_header.html")
@@ -151,6 +171,7 @@ def load_search_result(request):
 
 def end_session(request):
     current_session = get_study_settings_value(get_user_id(request),'current_session')
+    log_session_end_logic(request)
     if current_session == 'session_1':
         context = {}
         context['session_number'] = 1
@@ -168,16 +189,6 @@ def session_reflection(request):
     if(request.is_ajax()):
         response = save_reflection_process(request)
         return HttpResponse(json.dumps(response), content_type="application/json")
-
-def session_2(request):
-    variations = get_study_settings_value(get_user_id(request), 'seq')
-    add_to_study_settings(get_user_id(request), 'current_type', variations[1])
-    return init_recommendation(request, current_session='session_2', current_type=variations[1])
-
-def session_3(request):
-    variations = get_study_settings_value(get_user_id(request), 'seq')
-    add_to_study_settings(get_user_id(request), 'current_type', variations[2])
-    return init_recommendation(request, current_session='session_3', current_type=variations[2])
 
 def submit_load_more_no_critique(request):
     if request.is_ajax():
@@ -220,6 +231,13 @@ def session_3_reflection(request):
 
 def thank_you(request):
     return render(request, 'main_app/thank_you.html')
+
+def log_recipe_flavour_nutrition(request):
+    log_recipe_flavour_nutrition_logic(request)
+
+    response = {}
+    response['status'] = 1
+    return HttpResponse(json.dumps(response), content_type="application/json")
 
 def load_ingredients(request):
     pass
