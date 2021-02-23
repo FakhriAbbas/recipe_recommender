@@ -10,7 +10,7 @@
             <div class="col-md-6">
                 {% if c.More == 0.0 %}
                     <span>
-                        <span id="link-load-{{recipe_id}}-more" type="radio" name="critique"
+                        <span id="dis-link-load-{{recipe_id}}-more" type="radio" name="critique"
                               column="{{c.column_name}}" group="{{recipe_id}}"
                               recipe_id="{{recipe_id}}"
                               recipe_name="{{recipe_name}}"
@@ -32,7 +32,7 @@
             <div class="col-md-6">
                 {% if c.Less == 0.0 %}
                     <span>
-                        <span  id="link-load-{{recipe_id}}-less" type="radio" name="critique"
+                        <span  id="dis-link-load-{{recipe_id}}-less" type="radio" name="critique"
                               recipe_id="{{recipe_id}}"
                               recipe_name="{{recipe_name}}"
                               column="{{c.column_name}}" group="{{recipe_id}}" disabled>
