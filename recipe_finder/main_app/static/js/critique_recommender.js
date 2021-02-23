@@ -507,7 +507,7 @@ $( document ).ready(function() {
                             handle_search_link(search_key);
                         });
                    });
-
+                   window.scrollTo(0,0);
                }
            }
         });
